@@ -9,7 +9,7 @@ dynamicGP.cate(
   x,
   control.tr,
   treat.tr,
-  pr.values = NULL,
+  c.margin = NULL,
   token = NULL,
   use.cache = NULL
 )
@@ -23,7 +23,7 @@ dynamicGP.cate(
 
 \item{treat.tr}{A vector of the values of the treatment variables at all stages compared to the reference group.}
 
-\item{pr.values}{An optional vector of user-defined values of c for PrCTE.}
+\item{c.margin}{An optional vector of user-defined values of c for PrCTE.}
 
 \item{token}{Authentication token.}
 

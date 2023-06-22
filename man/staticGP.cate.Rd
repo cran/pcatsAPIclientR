@@ -9,7 +9,7 @@ staticGP.cate(
   x,
   control.tr,
   treat.tr,
-  pr.values = NULL,
+  c.margin = NULL,
   token = NULL,
   use.cache = NULL
 )
@@ -23,7 +23,7 @@ staticGP.cate(
 
 \item{treat.tr}{The value of the treatment variable compared to the reference group.}
 
-\item{pr.values}{An optional vector of user-defined values of c for PrCTE.}
+\item{c.margin}{An optional vector of user-defined values of c for PrCTE.}
 
 \item{token}{Authentication token.}
 

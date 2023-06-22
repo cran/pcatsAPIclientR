@@ -21,12 +21,11 @@ staticGP(
   x.explanatory = NULL,
   x.confounding = NULL,
   tr.type = "Discrete",
-  tr2.type = "Discrete",
   tr.values = NULL,
-  tr2.values = NULL,
-  pr.values = NULL,
+  c.margin = NULL,
   tr.hte = NULL,
-  tr2.hte = NULL,
+  time,
+  time.value = NULL,
   burn.num = 500,
   mcmc.num = 500,
   x.categorical = NULL,
@@ -78,17 +77,15 @@ staticGP(
 
 \item{tr.type}{The type of the first treatment. "Continuous" for continuous treatment and "Discrete" for categorical treatment. The default value is "Discrete".}
 
-\item{tr2.type}{The type of the second treatment if available. "Continuous" for continuous treatment and "Discrete" for categorical treatment. The default value is "Discrete".}
-
 \item{tr.values}{user-defined values for the calculation of ATE if the first treatment variable is continuous}
 
-\item{tr2.values}{user-defined values for the calculation of ATE if the second treatment variable is continuous}
-
-\item{pr.values}{An optional vector of user-defined values of c for PrTE.}
+\item{c.margin}{An optional vector of user-defined values of c for PrTE.}
 
 \item{tr.hte}{An optional vector specifying variables which may have heterogeneous treatment effect with the first treatment variable}
 
-\item{tr2.hte}{An optional vector specifying variables which may have heterogeneous treatment effect with the second treatment variable}
+\item{time}{Time variable.}
+
+\item{time.value}{Pre-specified time exposure.}
 
 \item{burn.num}{numeric; the number of MCMC 'burn-in' samples, i.e. number of MCMC to be discarded. The default value is 500.}
 

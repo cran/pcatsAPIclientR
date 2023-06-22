@@ -23,12 +23,11 @@
 #' @param x.explanatory The vector of the name of the explanatory variables.
 #' @param x.confounding The vector of the name of the confounding variables.
 #' @param tr.type The type of the first treatment. "Continuous" for continuous treatment and "Discrete" for categorical treatment. The default value is "Discrete".
-#' @param tr2.type The type of the second treatment if available. "Continuous" for continuous treatment and "Discrete" for categorical treatment. The default value is "Discrete".
 #' @param tr.values user-defined values for the calculation of ATE if the first treatment variable is continuous
-#' @param tr2.values user-defined values for the calculation of ATE if the second treatment variable is continuous
-#' @param pr.values An optional vector of user-defined values of c for PrTE.
+#' @param c.margin An optional vector of user-defined values of c for PrTE.
 #' @param tr.hte An optional vector specifying variables which may have heterogeneous treatment effect with the first treatment variable
-#' @param tr2.hte An optional vector specifying variables which may have heterogeneous treatment effect with the second treatment variable
+#' @param time Time variable.
+#' @param time.value Pre-specified time exposure.
 #' @param burn.num numeric; the number of MCMC 'burn-in' samples, i.e. number of MCMC to be discarded. The default value is 500.
 #' @param mcmc.num numeric; the number of MCMC samples after 'burn-in'. The default value is 500.
 #' @param x.categorical A vector of the name of categorical variables in data.
@@ -44,87 +43,93 @@
 #' @import httr
 #' @import utils
 #' @importFrom methods hasArg
-staticGP <- function(
-                     datafile=NULL,
-                     dataref=NULL,
-                     method="BART",
+staticGP <- function(datafile = NULL,
+                     dataref = NULL,
+                     method = "BART",
                      outcome,
-                     outcome.type="Continuous",
-                     outcome.bound_censor="neither",
-                     outcome.lb=NULL,
-                     outcome.ub=NULL,
-                     outcome.censor.yn=NULL,
-                     outcome.censor.lv=NULL,
-                     outcome.censor.uv=NULL,
-                     outcome.link="identity",
+                     outcome.type = "Continuous",
+                     outcome.bound_censor = "neither",
+                     outcome.lb = NULL,
+                     outcome.ub = NULL,
+                     outcome.censor.yn = NULL,
+                     outcome.censor.lv = NULL,
+                     outcome.censor.uv = NULL,
+                     outcome.link = "identity",
                      treatment,
-                     x.explanatory=NULL,
-                     x.confounding=NULL,
-                     tr.type="Discrete",
-                     tr2.type="Discrete",
-                     tr.values=NULL,
-                     tr2.values=NULL,
-                     pr.values=NULL,
-                     tr.hte=NULL,
-                     tr2.hte=NULL,
-                     burn.num=500,
-                     mcmc.num=500,
-                     x.categorical=NULL,
-                     mi.datafile=NULL,
-                     mi.dataref=NULL,
-                     sheet=NULL,
-                     mi.sheet=NULL,
-                     seed=5000,
-                     token=NULL,
-                     use.cache=NULL) {
-
-  data<-NULL
+                     x.explanatory = NULL,
+                     x.confounding = NULL,
+                     tr.type = "Discrete",
+                     tr.values = NULL,
+                     c.margin = NULL,
+                     tr.hte = NULL,
+                     time,
+                     time.value = NULL,
+                     burn.num = 500,
+                     mcmc.num = 500,
+                     x.categorical = NULL,
+                     mi.datafile = NULL,
+                     mi.dataref = NULL,
+                     sheet = NULL,
+                     mi.sheet = NULL,
+                     seed = 5000,
+                     token = NULL,
+                     use.cache = NULL) {
+  data <- NULL
   if (!is.null(datafile)) {
     data <- httr::upload_file(datafile)
   }
-  mi.data<-NULL
+  mi.data <- NULL
   if (!is.null(mi.datafile)) {
     mi.data <- httr::upload_file(mi.datafile)
   }
 
   headers <- c()
-  if (!is.null(token)) { headers<-c(headers, "Authorization"=paste("Bearer",token)) }
-  if (!hasArg(use.cache) && Sys.getenv("PCATS_USE_CACHE")!="") use.cache<-Sys.getenv("PCATS_USE_CACHE")
-  if (!is.null(use.cache) && (use.cache==T || use.cache=="1")) { headers<-c(headers, "X-API-Cache"="1") }
-  if (!is.null(use.cache) && (use.cache==F || use.cache=="0")) { headers<-c(headers, "X-API-Cache"="0") }
+  if (!is.null(token)) {
+    headers <- c(headers, "Authorization" = paste("Bearer", token))
+  }
+  if (!hasArg(use.cache) && Sys.getenv("PCATS_USE_CACHE") != "") use.cache <- Sys.getenv("PCATS_USE_CACHE")
+  if (!is.null(use.cache) && (use.cache == T || use.cache == "1")) {
+    headers <- c(headers, "X-API-Cache" = "1")
+  }
+  if (!is.null(use.cache) && (use.cache == F || use.cache == "0")) {
+    headers <- c(headers, "X-API-Cache" = "0")
+  }
 
-  res <- POST(url='https://pcats.research.cchmc.org/api/staticgp',
-              add_headers(headers),
-              encode='multipart',
-              body=list(data=data,
-                        dataref=dataref,
-                        outcome=outcome,
-                        treatment=treatment,
-                        x.explanatory=x.explanatory,
-                        x.confounding=x.confounding,
-                        tr.hte=tr.hte,
-                        tr2.hte=tr2.hte,
-                        burn.num=burn.num, mcmc.num=mcmc.num,
-                        outcome.lb=outcome.lb,
-                        outcome.ub=outcome.ub,
-                        outcome.bound_censor=outcome.bound_censor,
-                        outcome.type=outcome.type,
-                        outcome.censor.lv=outcome.censor.lv,
-                        outcome.censor.uv=outcome.censor.uv,
-                        outcome.censor.yn=outcome.censor.yn,
-                        outcome.link=outcome.link,
-                        tr.type=tr.type,
-                        tr2.type=tr2.type,
-                        tr.values=tr.values,
-                        tr2.values=tr2.values,
-                        pr.values=pr.values,
-                        x.categorical=x.categorical,
-                        method=method,
-                        mi.data=mi.data,
-                        mi.dataref=mi.dataref,
-                        sheet=sheet,
-                        mi.sheet=mi.sheet,
-                        seed=seed))
+  res <- POST(
+    url = "https://pcats.research.cchmc.org/api/staticgp",
+    add_headers(headers),
+    encode = "multipart",
+    body = list(
+      data = data,
+      dataref = dataref,
+      outcome = outcome,
+      treatment = treatment,
+      x.explanatory = x.explanatory,
+      x.confounding = x.confounding,
+      tr.hte = tr.hte,
+      time = time,
+      time.value = time.value,
+      burn.num = burn.num, mcmc.num = mcmc.num,
+      outcome.lb = outcome.lb,
+      outcome.ub = outcome.ub,
+      outcome.bound_censor = outcome.bound_censor,
+      outcome.type = outcome.type,
+      outcome.censor.lv = outcome.censor.lv,
+      outcome.censor.uv = outcome.censor.uv,
+      outcome.censor.yn = outcome.censor.yn,
+      outcome.link = outcome.link,
+      tr.type = tr.type,
+      tr.values = tr.values,
+      c.margin = c.margin,
+      x.categorical = x.categorical,
+      method = method,
+      mi.data = mi.data,
+      mi.dataref = mi.dataref,
+      sheet = sheet,
+      mi.sheet = mi.sheet,
+      seed = seed
+    )
+  )
 
   cont <- content(res)
   jobid <- cont$jobid[[1]]

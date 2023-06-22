@@ -7,18 +7,19 @@
 #' @import httr
 #' @import utils
 #'
-uploadfile <- function(filename, token=NULL) {
-
+uploadfile <- function(filename, token = NULL) {
   headers <- c()
-  if (!is.null(token)) { headers<-c(headers, "Authorization"=paste("Bearer",token)) }
+  if (!is.null(token)) {
+    headers <- c(headers, "Authorization" = paste("Bearer", token))
+  }
 
-  res <- POST(url=paste0('https://pcats.research.cchmc.org/api/uploadfile'),
-              add_headers(headers),
-              encode='multipart',
-              body=list(data=upload_file(filename)
-              ))
+  res <- POST(
+    url = paste0("https://pcats.research.cchmc.org/api/uploadfile"),
+    add_headers(headers),
+    encode = "multipart",
+    body = list(data = upload_file(filename))
+  )
   cont <- content(res)
   jobid <- cont$jobid[[1]]
   jobid
 }
-

@@ -15,6 +15,8 @@ dynamicGP(
   stg1.tr.hte = NULL,
   stg1.tr.values = NULL,
   stg1.tr.type = "Discrete",
+  stg1.time,
+  stg1.time.value = NULL,
   stg1.outcome.type = "Continuous",
   stg1.outcome.bound_censor = "neither",
   stg1.outcome.lb = NULL,
@@ -23,7 +25,7 @@ dynamicGP(
   stg1.outcome.censor.uv = NULL,
   stg1.outcome.censor.yn = NULL,
   stg1.outcome.link = "identity",
-  stg1.pr.values = NULL,
+  stg1.c.margin = NULL,
   stg2.outcome,
   stg2.treatment,
   stg2.x.explanatory = NULL,
@@ -32,6 +34,8 @@ dynamicGP(
   stg2.tr2.hte = NULL,
   stg2.tr.values = NULL,
   stg2.tr.type = "Discrete",
+  stg2.time,
+  stg2.time.value = NULL,
   stg2.outcome.type = "Continuous",
   stg2.outcome.bound_censor = "neither",
   stg2.outcome.lb = NULL,
@@ -40,7 +44,7 @@ dynamicGP(
   stg2.outcome.censor.uv = NULL,
   stg2.outcome.censor.yn = NULL,
   stg2.outcome.link = "identity",
-  stg2.pr.values = NULL,
+  stg2.c.margin = NULL,
   burn.num = 500,
   mcmc.num = 500,
   x.categorical = NULL,
@@ -74,6 +78,10 @@ dynamicGP(
 
 \item{stg1.tr.type}{The type of treatment at stage 1. "Continuous" for continuous treatment and "Discrete" for categorical treatment. The default value is "Discrete".}
 
+\item{stg1.time}{Time variable.}
+
+\item{stg1.time.value}{Pre-specified time exposure.}
+
 \item{stg1.outcome.type}{Intermediate outcome type ("Continuous" or "Discrete") for stage 1.}
 
 \item{stg1.outcome.bound_censor}{The default value is "neither".
@@ -96,7 +104,7 @@ dynamicGP(
 "log" for log transformation.
 "logit" for logit transformation.}
 
-\item{stg1.pr.values}{An optional vector of user-defined values of c for PrTE at stage 1.}
+\item{stg1.c.margin}{An optional vector of user-defined values of c for PrTE at stage 1.}
 
 \item{stg2.outcome}{The name of the outcome variable for stage 2.}
 
@@ -106,13 +114,17 @@ dynamicGP(
 
 \item{stg2.x.confounding}{A vector of the name of the confounding variables for stage 2.}
 
-\item{stg2.tr1.hte}{At stage 2, an optional vector specifying cate-gorical variables which may have heterogeneoustreatment effect with the stage 1 treatment variable}
+\item{stg2.tr1.hte}{At stage 2, an optional vector specifying categorical variables which may have heterogeneous treatment effect with the stage 1 treatment variable}
 
-\item{stg2.tr2.hte}{At stage 2, an optional vector specifying cate-gorical variables which may have heterogeneoustreatment effect with the stage 2 treatment variable}
+\item{stg2.tr2.hte}{At stage 2, an optional vector specifying categorical variables which may have heterogeneous treatment effect with the stage 2 treatment variable}
 
 \item{stg2.tr.values}{User-defined values for the calculation of ATE if the treatment variable is continuous for stage 2.}
 
 \item{stg2.tr.type}{The type of treatment at stage 2. "Continuous" for continuous treatment and "Discrete" for categorical treatment. The default value is "Discrete".}
+
+\item{stg2.time}{Time variable.}
+
+\item{stg2.time.value}{Pre-specified time exposure.}
 
 \item{stg2.outcome.type}{Outcome type ("Continuous" or "Discrete") for stage 2.}
 
@@ -136,7 +148,7 @@ dynamicGP(
 "log" for log transformation.
 "logit" for logit transformation.}
 
-\item{stg2.pr.values}{An optional vector of user-defined values of c for PrTE at stage 2.}
+\item{stg2.c.margin}{An optional vector of user-defined values of c for PrTE at stage 2.}
 
 \item{burn.num}{numeric; the number of MCMC 'burn-in' samples, i.e. number of MCMC to be discarded. The default value is 500.}
 

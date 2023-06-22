@@ -7,18 +7,16 @@
 #' @import httr
 #' @import utils
 #'
-wait_for_result <- function(jobid, token=NULL) {
-  status<-NULL
-  while (TRUE)
-  {
+wait_for_result <- function(jobid, token = NULL) {
+  status <- NULL
+  while (TRUE) {
     status <- job_status(jobid, token)
 
-    if (status!="Pending") {
-      break;
+    if (status != "Pending") {
+      break
     }
 
     Sys.sleep(1)
   }
   status
 }
-
