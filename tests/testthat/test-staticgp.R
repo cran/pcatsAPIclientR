@@ -21,7 +21,8 @@ run_staticGP_example <- function() {
 
 test_that("Function to submit staticgp", {
   jobid <- run_staticGP_example()
-  expect_true(grepl("^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", jobid, ignore.case = TRUE))
+  expect_true(grepl("^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", jobid, ignore.case = TRUE),
+              label="Valid jobid")
 })
 
 test_that("Function can wait for result", {
@@ -29,9 +30,9 @@ test_that("Function can wait for result", {
   if (grepl("^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", jobid, ignore.case = TRUE)) {
     status <- pcatsAPIclientR::wait_for_result(jobid)
   } else {
-    status <- "Failed"
+    status <- "Job Submission Failed"
   }
-  expect_true(status == "Done")
+  expect_equivalent(status, "Done")
 })
 
 test_that("Function get printed results", {
@@ -39,8 +40,9 @@ test_that("Function get printed results", {
   if (grepl("^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", jobid, ignore.case = TRUE)) {
     status <- pcatsAPIclientR::wait_for_result(jobid)
   } else {
-    status <- "Failed"
+    status <- "Job Submission Failed"
   }
+  expect_equivalent(status, "Done")
   if (status != "Done") {
     line3 <- ""
   } else {
@@ -57,8 +59,9 @@ test_that("Function getresults", {
   if (grepl("^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", jobid, ignore.case = TRUE)) {
     status <- pcatsAPIclientR::wait_for_result(jobid)
   } else {
-    status <- "Failed"
+    status <- "Job Submission Failed"
   }
+  expect_equivalent(status, "Done")
   if (status != "Done") {
     line <- ""
   } else {

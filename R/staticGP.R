@@ -95,7 +95,8 @@ staticGP <- function(datafile = NULL,
     headers <- c(headers, "X-API-Cache" = "0")
   }
 
-  res <- POST(
+  jobid <- tryCatch({
+    res <- POST(
     url = "https://pcats.research.cchmc.org/api/staticgp",
     add_headers(headers),
     encode = "multipart",
@@ -130,8 +131,12 @@ staticGP <- function(datafile = NULL,
       seed = seed
     )
   )
+    cont <- content(res)
+    jobid <- cont$jobid[[1]]
+    jobid
+    }, error = function(e) {
+    return("")  # Catch connection errors
+  })
 
-  cont <- content(res)
-  jobid <- cont$jobid[[1]]
   jobid
 }

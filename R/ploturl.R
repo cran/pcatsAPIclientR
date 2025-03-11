@@ -18,10 +18,14 @@ ploturl <- function(jobid, plottype = "", token = NULL) {
     headers <- c(headers, "Authorization" = paste("Bearer", token))
   }
 
-  res <- GET(
-    url = paste0("https://pcats.research.cchmc.org/api/job/", jobid, "/ploturl"),
-    add_headers(headers)
-  )
+  tryCatch({
+    res <- GET(
+      url = paste0("https://pcats.research.cchmc.org/api/job/", jobid, "/ploturl"),
+      add_headers(headers)
+    )
+  }, error = function(e) {
+    return(NULL)  # Catch connection errors
+  })
 
   if (res$status_code != 200) {
     return(NULL)
