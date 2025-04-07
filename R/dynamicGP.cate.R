@@ -32,18 +32,31 @@ dynamicGP.cate <- function(jobid,
     headers <- c(headers, "X-API-Cache" = "0")
   }
 
-  res <- POST(
-    url = paste0("https://pcats.research.cchmc.org/api/job/", jobid, "/dynamicgp.cate"),
-    add_headers(headers),
-    encode = "multipart",
-    body = list(
-      x = x,
-      control.tr = control.tr,
-      treat.tr = treat.tr,
-      c.margin = c.margin
-    )
-  )
-  cont <- content(res)
-  jobid <- cont$jobid[[1]]
+  retry_count <- 5
+  while(1) {
+    jobid <- tryCatch({
+      res <- POST(
+        url = paste0("https://pcats.research.cchmc.org/api/job/", jobid, "/dynamicgp.cate"),
+        add_headers(headers),
+        encode = "multipart",
+        body = list(
+          x = x,
+          control.tr = control.tr,
+          treat.tr = treat.tr,
+          c.margin = c.margin
+        )
+      )
+      cont <- content(res)
+      jobid <- cont$jobid[[1]]
+      jobid
+      }, error = function(e) {
+      return("")  # Catch connection errors
+    })
+    if (jobid != "") break;
+
+    retry_count <- retry_count - 1
+    if (retry_count == 0) break;
+    Sys.sleep(5-retry_count)
+  }
   jobid
 }

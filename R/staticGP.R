@@ -95,48 +95,56 @@ staticGP <- function(datafile = NULL,
     headers <- c(headers, "X-API-Cache" = "0")
   }
 
-  jobid <- tryCatch({
-    res <- POST(
-    url = "https://pcats.research.cchmc.org/api/staticgp",
-    add_headers(headers),
-    encode = "multipart",
-    body = list(
-      data = data,
-      dataref = dataref,
-      outcome = outcome,
-      treatment = treatment,
-      x.explanatory = x.explanatory,
-      x.confounding = x.confounding,
-      tr.hte = tr.hte,
-      time = time,
-      time.value = time.value,
-      burn.num = burn.num, mcmc.num = mcmc.num,
-      outcome.lb = outcome.lb,
-      outcome.ub = outcome.ub,
-      outcome.bound_censor = outcome.bound_censor,
-      outcome.type = outcome.type,
-      outcome.censor.lv = outcome.censor.lv,
-      outcome.censor.uv = outcome.censor.uv,
-      outcome.censor.yn = outcome.censor.yn,
-      outcome.link = outcome.link,
-      tr.type = tr.type,
-      tr.values = tr.values,
-      c.margin = c.margin,
-      x.categorical = x.categorical,
-      method = method,
-      mi.data = mi.data,
-      mi.dataref = mi.dataref,
-      sheet = sheet,
-      mi.sheet = mi.sheet,
-      seed = seed
+  retry_count <- 5
+  while(1) {
+    jobid <- tryCatch({
+      res <- POST(
+      url = "https://pcats.research.cchmc.org/api/staticgp",
+      add_headers(headers),
+      encode = "multipart",
+      body = list(
+        data = data,
+        dataref = dataref,
+        outcome = outcome,
+        treatment = treatment,
+        x.explanatory = x.explanatory,
+        x.confounding = x.confounding,
+        tr.hte = tr.hte,
+        time = time,
+        time.value = time.value,
+        burn.num = burn.num, mcmc.num = mcmc.num,
+        outcome.lb = outcome.lb,
+        outcome.ub = outcome.ub,
+        outcome.bound_censor = outcome.bound_censor,
+        outcome.type = outcome.type,
+        outcome.censor.lv = outcome.censor.lv,
+        outcome.censor.uv = outcome.censor.uv,
+        outcome.censor.yn = outcome.censor.yn,
+        outcome.link = outcome.link,
+        tr.type = tr.type,
+        tr.values = tr.values,
+        c.margin = c.margin,
+        x.categorical = x.categorical,
+        method = method,
+        mi.data = mi.data,
+        mi.dataref = mi.dataref,
+        sheet = sheet,
+        mi.sheet = mi.sheet,
+        seed = seed
+      )
     )
-  )
-    cont <- content(res)
-    jobid <- cont$jobid[[1]]
-    jobid
-    }, error = function(e) {
-    return("")  # Catch connection errors
-  })
+      cont <- content(res)
+      jobid <- cont$jobid[[1]]
+      jobid
+      }, error = function(e) {
+      return("")  # Catch connection errors
+    })
+    if (jobid != "") break;
+
+    retry_count <- retry_count - 1
+    if (retry_count == 0) break;
+    Sys.sleep(5-retry_count)
+  }
 
   jobid
 }

@@ -18,20 +18,26 @@ job_status <- function(jobid, token = NULL) {
     headers <- c(headers, "Authorization" = paste("Bearer", token))
   }
 
-  tryCatch({
-    res <- GET(
-      url = paste0("https://pcats.research.cchmc.org/api/job/", jobid, "/status"),
-      add_headers(headers)
-    )
-  }, error = function(e) {
-    return(NULL)  # Catch connection errors
-  })
+  retry_count <- 5
+  while(1) {
+    status <- tryCatch({
+      res <- GET(
+        url = paste0("https://pcats.research.cchmc.org/api/job/", jobid, "/status"),
+        add_headers(headers)
+      )
+      if (res$status_code != 200) {
+        return(NULL)
+      }
+      status <- jsonlite::fromJSON(httr::content(res, as = "text", encoding = "utf-8"))
+      status
+    }, error = function(e) {
+      return(NULL)  # Catch connection errors
+    })
+    if (!is.null(status)) break;
 
-  if (res$status_code != 200) {
-    return(NULL)
+    retry_count <- retry_count - 1
+    if (retry_count == 0) break;
+    Sys.sleep(5-retry_count)
   }
-
-  status <- jsonlite::fromJSON(httr::content(res, as = "text", encoding = "utf-8"))
-
   unlist(status)
 }

@@ -145,54 +145,67 @@ dynamicGP <- function(datafile = NULL,
     headers <- c(headers, "X-API-Cache" = "0")
   }
 
-  res <- POST(
-    url = "https://pcats.research.cchmc.org/api/dynamicgp",
-    add_headers(headers),
-    encode = "multipart",
-    body = list(
-      data = data,
-      dataref = dataref,
-      stg1.outcome = stg1.outcome, stg1.treatment = stg1.treatment,
-      stg1.x.explanatory = stg1.x.explanatory, stg1.x.confounding = stg1.x.confounding,
-      stg1.tr.hte = stg1.tr.hte,
-      stg1.tr.values = stg1.tr.values,
-      stg1.tr.type = stg1.tr.type,
-      stg1.time = stg1.time,
-      stg1.time.value = stg1.time.value,
-      stg1.outcome.type = stg1.outcome.type,
-      stg1.outcome.bound_censor = stg1.outcome.bound_censor,
-      stg1.outcome.lb = stg1.outcome.lb, stg1.outcome.ub = stg1.outcome.ub,
-      stg1.outcome.censor.lv = stg1.outcome.censor.lv, stg1.outcome.censor.uv = stg1.outcome.censor.uv,
-      stg1.outcome.censor.yn = stg1.outcome.censor.yn, stg1.outcome.link = stg1.outcome.link,
-      stg1.c.margin = stg1.c.margin,
+  retry_count <- 5
+  while(1) {
+    jobid <- tryCatch({
+      res <- POST(
+        url = "https://pcats.research.cchmc.org/api/dynamicgp",
+        add_headers(headers),
+        encode = "multipart",
+        body = list(
+          data = data,
+          dataref = dataref,
+          stg1.outcome = stg1.outcome, stg1.treatment = stg1.treatment,
+          stg1.x.explanatory = stg1.x.explanatory, stg1.x.confounding = stg1.x.confounding,
+          stg1.tr.hte = stg1.tr.hte,
+          stg1.tr.values = stg1.tr.values,
+          stg1.tr.type = stg1.tr.type,
+          stg1.time = stg1.time,
+          stg1.time.value = stg1.time.value,
+          stg1.outcome.type = stg1.outcome.type,
+          stg1.outcome.bound_censor = stg1.outcome.bound_censor,
+          stg1.outcome.lb = stg1.outcome.lb, stg1.outcome.ub = stg1.outcome.ub,
+          stg1.outcome.censor.lv = stg1.outcome.censor.lv, stg1.outcome.censor.uv = stg1.outcome.censor.uv,
+          stg1.outcome.censor.yn = stg1.outcome.censor.yn, stg1.outcome.link = stg1.outcome.link,
+          stg1.c.margin = stg1.c.margin,
+    
+          # stage 2
+          stg2.outcome = stg2.outcome, stg2.treatment = stg2.treatment,
+          stg2.x.explanatory = stg2.x.explanatory, stg2.x.confounding = stg2.x.confounding,
+          stg2.tr1.hte = stg2.tr1.hte,
+          stg2.tr2.hte = stg2.tr2.hte,
+          stg2.tr.values = stg2.tr.values,
+          stg2.tr.type = stg2.tr.type,
+          stg2.time = stg2.time,
+          stg2.time.value = stg2.time.value,
+          stg2.outcome.type = stg2.outcome.type,
+          stg2.outcome.bound_censor = stg2.outcome.bound_censor,
+          stg2.outcome.lb = stg2.outcome.lb, stg2.outcome.ub = stg2.outcome.ub,
+          stg2.outcome.censor.lv = stg2.outcome.censor.lv, stg2.outcome.censor.uv = stg2.outcome.censor.uv,
+          stg2.outcome.censor.yn = stg2.outcome.censor.yn, stg2.outcome.link = stg2.outcome.link,
+          stg2.c.margin = stg2.c.margin,
+          burn.num = burn.num, mcmc.num = mcmc.num,
+          x.categorical = x.categorical,
+          method = method,
+          mi.data = mi.data,
+          mi.dataref = mi.dataref,
+          sheet = sheet,
+          mi.sheet = mi.sheet,
+          seed = seed
+        )
+      )
+    
+      cont <- content(res)
+      jobid <- cont$jobid[[1]]
+      jobid
+      }, error = function(e) {
+      return("")  # Catch connection errors
+    })
+    if (jobid != "") break;
 
-      # stage 2
-      stg2.outcome = stg2.outcome, stg2.treatment = stg2.treatment,
-      stg2.x.explanatory = stg2.x.explanatory, stg2.x.confounding = stg2.x.confounding,
-      stg2.tr1.hte = stg2.tr1.hte,
-      stg2.tr2.hte = stg2.tr2.hte,
-      stg2.tr.values = stg2.tr.values,
-      stg2.tr.type = stg2.tr.type,
-      stg2.time = stg2.time,
-      stg2.time.value = stg2.time.value,
-      stg2.outcome.type = stg2.outcome.type,
-      stg2.outcome.bound_censor = stg2.outcome.bound_censor,
-      stg2.outcome.lb = stg2.outcome.lb, stg2.outcome.ub = stg2.outcome.ub,
-      stg2.outcome.censor.lv = stg2.outcome.censor.lv, stg2.outcome.censor.uv = stg2.outcome.censor.uv,
-      stg2.outcome.censor.yn = stg2.outcome.censor.yn, stg2.outcome.link = stg2.outcome.link,
-      stg2.c.margin = stg2.c.margin,
-      burn.num = burn.num, mcmc.num = mcmc.num,
-      x.categorical = x.categorical,
-      method = method,
-      mi.data = mi.data,
-      mi.dataref = mi.dataref,
-      sheet = sheet,
-      mi.sheet = mi.sheet,
-      seed = seed
-    )
-  )
-
-  cont <- content(res)
-  jobid <- cont$jobid[[1]]
+    retry_count <- retry_count - 1
+    if (retry_count == 0) break;
+    Sys.sleep(5-retry_count)
+  }
   jobid
 }
