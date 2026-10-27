@@ -22,8 +22,14 @@ uploadfile <- function(filename, token = NULL) {
         encode = "multipart",
         body = list(data = upload_file(filename))
       )
+      if (res$status_code != 200) {
+        stop("HTTP status ", res$status_code)
+      }
       cont <- content(res)
       jobid <- cont$jobid[[1]]
+      if (is.null(jobid)) {
+        stop("No jobid in response")
+      }
       jobid
     }, error = function(e) {
       return("")  # Catch connection errors

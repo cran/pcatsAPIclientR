@@ -26,7 +26,7 @@ ploturl <- function(jobid, plottype = "", token = NULL) {
         add_headers(headers)
       )
       if (res$status_code != 200) {
-        return(NULL)
+        stop("HTTP status ", res$status_code)
       }
   
       url <- jsonlite::fromJSON(httr::content(res, as = "text"))
@@ -35,7 +35,7 @@ ploturl <- function(jobid, plottype = "", token = NULL) {
     }, error = function(e) {
       return(NULL)  # Catch connection errors
     })
-    if (output != "") break;
+    if (!is.null(output)) break;
 
     retry_count <- retry_count - 1
     if (retry_count == 0) break;

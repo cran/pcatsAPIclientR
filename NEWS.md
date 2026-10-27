@@ -1,3 +1,8 @@
+## version 1.3.1
+
+* Tests that call the live PCATS API are skipped on CRAN and when the API is unreachable.
+* API calls no longer fail with "argument is of length zero" when the server returns an unexpected (non-JSON or non-200) response; non-200 responses are now retried.
+
 ## version 1.3.0
 
 Retries during API interaction.

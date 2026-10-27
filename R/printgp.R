@@ -21,7 +21,7 @@ printgp <- function(jobid, token = NULL) {
         add_headers(headers)
       )
       if (res$status_code != 200) {
-        return("")
+        stop("HTTP status ", res$status_code)
       }
       output <- httr::content(res, as = "text")
       output

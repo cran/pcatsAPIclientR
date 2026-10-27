@@ -22,7 +22,7 @@ results <- function(jobid, token = NULL) {
         add_headers(headers)
       )
       if (res$status_code != 200) {
-        return(NULL)
+        stop("HTTP status ", res$status_code)
       }
   
       output <- jsonlite::fromJSON(httr::content(res, as = "text"))

@@ -12,7 +12,7 @@ wait_for_result <- function(jobid, token = NULL) {
   while (TRUE) {
     status <- job_status(jobid, token)
 
-    if (status != "Pending") {
+    if (is.null(status) || status != "Pending") {
       break
     }
 

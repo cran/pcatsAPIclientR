@@ -20,12 +20,14 @@ run_staticGP_example <- function() {
 }
 
 test_that("Function to submit staticgp", {
+  skip_if_api_unavailable()
   jobid <- run_staticGP_example()
   expect_true(grepl("^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", jobid, ignore.case = TRUE),
               label="Valid jobid")
 })
 
 test_that("Function can wait for result", {
+  skip_if_api_unavailable()
   jobid <- run_staticGP_example()
   if (grepl("^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", jobid, ignore.case = TRUE)) {
     status <- pcatsAPIclientR::wait_for_result(jobid)
@@ -36,6 +38,7 @@ test_that("Function can wait for result", {
 })
 
 test_that("Function get printed results", {
+  skip_if_api_unavailable()
   jobid <- run_staticGP_example()
   if (grepl("^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", jobid, ignore.case = TRUE)) {
     status <- pcatsAPIclientR::wait_for_result(jobid)
@@ -55,6 +58,7 @@ test_that("Function get printed results", {
 })
 
 test_that("Function getresults", {
+  skip_if_api_unavailable()
   jobid <- run_staticGP_example()
   if (grepl("^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", jobid, ignore.case = TRUE)) {
     status <- pcatsAPIclientR::wait_for_result(jobid)
